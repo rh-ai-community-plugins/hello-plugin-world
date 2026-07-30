@@ -7,9 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Default installation namespace `cp-hello-world` — Helm chart now creates and targets a dedicated namespace via `values.yaml` and a `namespace.yaml` template
+- `install.namespace` field in `plugin.yaml` for the community plugin catalog
+- BFF `GET /api/config` endpoint exposing the BFF's namespace (`POD_NAMESPACE` env var) for runtime discovery
+- `POD_NAMESPACE` env var injected into the BFF container via Kubernetes downward API
+
+### Fixed
+
+- ProjectSelector test `act(...)` warning silenced by wrapping `window.blur` dispatch in `act()`
+
+## [0.4.2] - 2026-07-30
+
+### Added
+
+- Create Project modal in ProjectSelector dropdown — users can create OpenShift projects directly from the selector and auto-land on them
+- Optimistic local state update after project creation via `addProject()` in `useProjects` hook
+- Window blur handler to close ProjectSelector dropdown when the browser loses focus
+- ProjectSelector CSS with border styling matching dashboard conventions
+- Resource name auto-generation from display name with DNS validation and manual override
+- Namespace labeling (`opendatahub.io/dashboard: 'true'`) on newly created projects
+
 ### Changed
 
 - BFF TLS skip now requires explicit `K8S_TLS_INSECURE=true` env var instead of applying unconditionally when `K8S_API_BASE` is set
+- `useProjects.refresh()` now returns `Promise<Project[]>` for downstream consumers
 
 ### Internal
 
@@ -82,7 +105,8 @@ Initial release of the hello-world community plugin seed project.
 - Container image build (`build-push.sh`) and vulnerability scan (`scan-image.sh`) scripts
 - Multi-stage `Containerfile` for production builds
 
-[Unreleased]: https://github.com/rh-ai-community-plugins/hello-world/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/rh-ai-community-plugins/hello-world/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/rh-ai-community-plugins/hello-world/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/rh-ai-community-plugins/hello-world/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/rh-ai-community-plugins/hello-world/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/rh-ai-community-plugins/hello-world/releases/tag/v0.3.0

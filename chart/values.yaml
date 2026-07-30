@@ -1,6 +1,10 @@
 # Default values for hello-world.
 # This is a YAML-formatted file.
 
+# -- Target namespace for all namespaced resources.
+# Override with --set namespace=<ns> to deploy elsewhere.
+namespace: cp-hello-world
+
 image:
   repository: quay.io/rh-ai-community-plugins/hello-world
   tag: ""

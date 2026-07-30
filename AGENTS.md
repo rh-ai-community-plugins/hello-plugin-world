@@ -71,7 +71,7 @@ Six hooks in `src/app/hooks/` provide data fetching and API integration:
 
 ### BFF Service
 
-The `bff/` directory contains a standalone Express.js + TypeScript backend service that demonstrates the BFF pattern. The dashboard proxies requests from `/hello-world/api/*` to this service, forwarding the user's Bearer token. See `docs/architecture/BFF_PATTERN.md` for details.
+The `bff/` directory contains a standalone Express.js + TypeScript backend service that demonstrates the BFF pattern. The dashboard proxies requests from `/hello-world/api/*` to this service, forwarding the user's Bearer token. The BFF exposes a `GET /api/config` endpoint returning `{ bffNamespace }` (sourced from the `POD_NAMESPACE` env var, injected via Kubernetes downward API). See `docs/architecture/BFF_PATTERN.md` for details.
 
 ### Entry Point Chain
 
@@ -102,7 +102,7 @@ Jest with `ts-jest` preset and `jsdom` environment (`jest.config.js`). `jest.set
 
 - **Frontend container**: Multi-stage build in `Containerfile` — UBI9 Node 22 builder → UBI9 Nginx 1.24 serving `dist/` on port 8080 as UID 1001. Nginx adds CORS header on `remoteEntry.js`.
 - **BFF container**: Multi-stage build in `bff/Containerfile` — UBI9 Node 22 builder → UBI9 Node 22 runtime on port 3000 as UID 1001.
-- **Helm chart**: `chart/` deploys to Kubernetes with Deployment + Service for both frontend and BFF. Frontend defaults to `quay.io/rh-ai-community-plugins/hello-world:latest`, BFF to `quay.io/rh-ai-community-plugins/hello-world-bff:latest`.
+- **Helm chart**: `chart/` deploys to Kubernetes with Deployment + Service for both frontend and BFF into the `cp-hello-world` namespace by default (configurable via `values.yaml`). Frontend defaults to `quay.io/rh-ai-community-plugins/hello-world:latest`, BFF to `quay.io/rh-ai-community-plugins/hello-world-bff:latest`.
 
 ### CI/CD Workflows
 

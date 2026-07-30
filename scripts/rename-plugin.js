@@ -175,6 +175,7 @@ function buildChangePlan(names) {
     ['quay.io/rh-ai-community-plugins/hello-world-bff', `quay.io/OWNER/${kebab}-bff`],
     ['quay.io/rh-ai-community-plugins/hello-world', `quay.io/OWNER/${kebab}`],
     ['nameOverride: "hello-world"', `nameOverride: "${kebab}"`],
+    ['cp-hello-world', `cp-${kebab}`],
     ['hello-world-bff', `${kebab}-bff`],
     ['hello-world', kebab],
   ];
@@ -267,6 +268,7 @@ function buildChangePlan(names) {
     'chart/templates/_helpers.tpl',
     'chart/templates/deployment.yaml',
     'chart/templates/service.yaml',
+    'chart/templates/namespace.yaml',
     'chart/templates/bff-deployment.yaml',
     'chart/templates/bff-service.yaml',
     'chart/templates/serviceaccount.yaml',
@@ -316,6 +318,7 @@ function buildChangePlan(names) {
     file: 'plugin.yaml',
     replacements: [
       ['quay.io/rh-ai-community-plugins/hello-world', `quay.io/OWNER/${kebab}`],
+      ['cp-hello-world', `cp-${kebab}`],
       ...identifierReplacements,
     ],
   });

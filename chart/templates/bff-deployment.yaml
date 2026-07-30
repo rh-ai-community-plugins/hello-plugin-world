@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "hello-world.fullname" . }}-bff
+  namespace: {{ include "hello-world.namespace" . }}
   labels:
     {{- include "hello-world.labels" . | nindent 4 }}
     app.kubernetes.io/component: bff
@@ -30,6 +31,11 @@ spec:
               drop: ["ALL"]
             seccompProfile:
               type: RuntimeDefault
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           ports:
             - name: http
               containerPort: {{ .Values.bff.service.targetPort }}

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useProjects } from '~/app/hooks/useProjects';
 import { ProjectSelector } from '../ProjectSelector';
@@ -168,7 +168,9 @@ describe('ProjectSelector', () => {
     await user.click(screen.getByLabelText('Select a project'));
     expect(screen.getByText('Projects')).toBeInTheDocument();
 
-    window.dispatchEvent(new Event('blur'));
+    act(() => {
+      window.dispatchEvent(new Event('blur'));
+    });
 
     await waitFor(() => {
       expect(screen.queryByText('Projects')).not.toBeInTheDocument();

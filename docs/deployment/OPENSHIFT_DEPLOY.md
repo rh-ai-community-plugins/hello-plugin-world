@@ -18,8 +18,8 @@ Install directly from the OCI registry — no need to clone the repo:
 
 ```bash
 helm install hello-world oci://quay.io/rh-ai-community-plugins/hello-world-chart \
-  --version 0.4.1 \
-  --namespace hello-world \
+  --version 0.4.2 \
+  --namespace cp-hello-world \
   --create-namespace
 ```
 
@@ -27,7 +27,7 @@ Or, from a local checkout of the repository:
 
 ```bash
 helm install hello-world chart/ \
-  --namespace hello-world \
+  --namespace cp-hello-world \
   --create-namespace
 ```
 
@@ -42,8 +42,8 @@ Pass `--set` flags to customize the installation:
 
 ```bash
 helm install hello-world oci://quay.io/rh-ai-community-plugins/hello-world-chart \
-  --version 0.4.1 \
-  --namespace hello-world \
+  --version 0.4.2 \
+  --namespace cp-hello-world \
   --create-namespace \
   --set replicaCount=2
 ```
@@ -52,8 +52,8 @@ To deploy the frontend only (no BFF):
 
 ```bash
 helm install hello-world oci://quay.io/rh-ai-community-plugins/hello-world-chart \
-  --version 0.4.1 \
-  --namespace hello-world \
+  --version 0.4.2 \
+  --namespace cp-hello-world \
   --create-namespace \
   --set bff.enabled=false
 ```
@@ -85,7 +85,7 @@ config.append({
     'tls': False,
     'service': {
       'name': 'hello-world',
-      'namespace': 'hello-world',
+      'namespace': 'cp-hello-world',
       'port': 8080
     }
   }
@@ -117,7 +117,7 @@ config.append({
     'tls': False,
     'service': {
       'name': 'hello-world',
-      'namespace': 'hello-world',
+      'namespace': 'cp-hello-world',
       'port': 8080
     }
   },
@@ -128,7 +128,7 @@ config.append({
     'tls': False,
     'service': {
       'name': 'hello-world-bff',
-      'namespace': 'hello-world',
+      'namespace': 'cp-hello-world',
       'port': 3000
     }
   }]
@@ -175,7 +175,7 @@ for entry in data:
 Verify the plugin pods are running:
 
 ```bash
-oc get pods -n hello-world
+oc get pods -n cp-hello-world
 ```
 
 You should see pods for `hello-world` (and `hello-world-bff` if BFF is enabled), all in `Running` status.
@@ -211,8 +211,8 @@ oc set env deployment/rhods-dashboard \
 ### 2. Uninstall the Helm release
 
 ```bash
-helm uninstall hello-world -n hello-world
-oc delete namespace hello-world   # optional: remove the namespace entirely
+helm uninstall hello-world -n cp-hello-world
+oc delete namespace cp-hello-world   # optional: remove the namespace entirely
 ```
 
 ---
@@ -223,6 +223,7 @@ Key values in `chart/values.yaml`:
 
 | Parameter | Default | Description |
 |---|---|---|
+| `namespace` | `cp-hello-world` | Target namespace for all namespaced resources |
 | `image.repository` | `quay.io/rh-ai-community-plugins/hello-world` | Frontend container image |
 | `image.tag` | `""` (defaults to appVersion) | Frontend image tag |
 | `image.pullPolicy` | `IfNotPresent` | Image pull policy |

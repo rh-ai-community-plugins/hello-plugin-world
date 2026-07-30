@@ -4,6 +4,7 @@ import { getK8sBaseUrl } from './utils/k8sClient';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
+const POD_NAMESPACE = process.env.POD_NAMESPACE ?? 'cp-hello-world';
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -14,6 +15,11 @@ app.use((req, res, next) => {
 });
 
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
+
+app.get('/api/config', (_req, res) => {
+  res.json({ bffNamespace: POD_NAMESPACE });
+});
+
 app.get('/api/namespace-summary', namespaceSummaryHandler);
 
 app.listen(PORT, () => {
