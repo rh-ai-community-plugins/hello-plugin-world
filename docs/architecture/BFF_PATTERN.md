@@ -69,14 +69,14 @@ The dashboard discovers BFF services via the `proxyService` field in the federat
   "name": "helloWorld",
   "backend": {
     "remoteEntry": "/remoteEntry.js",
-    "service": { "name": "hello-world", "namespace": "hello-world", "port": 8080 }
+    "service": { "name": "hello-world", "namespace": "cp-hello-world", "port": 8080 }
   },
   "proxyService": [{
     "path": "/hello-world/api",
     "pathRewrite": "/api",
     "authorize": true,
     "tls": false,
-    "service": { "name": "hello-world-bff", "namespace": "hello-world", "port": 3000 }
+    "service": { "name": "hello-world-bff", "namespace": "cp-hello-world", "port": 3000 }
   }]
 }
 ```
@@ -100,16 +100,21 @@ bff/
   tsconfig.json
   Containerfile             # UBI9 Node 22, runs on port 3000
   src/
-    server.ts               # Express app with health check + namespace summary route
+    server.ts               # Express app with health check, config, and namespace summary routes
     types.ts                # Shared types (PodCounts, NamespaceInfo)
     routes/
       namespaceSummary.ts   # GET /api/namespace-summary handler
     utils/
       k8sClient.ts          # Authenticated K8s API caller
   __tests__/
+    config.test.ts
     namespaceSummary.test.ts
     k8sClient.test.ts
 ```
+
+### Endpoint: `GET /api/config`
+
+Returns the BFF's runtime namespace as `{ bffNamespace: string }`. The value comes from the `POD_NAMESPACE` environment variable (defaults to `cp-hello-world`). In the Helm chart, `POD_NAMESPACE` is injected via the Kubernetes downward API (`metadata.namespace`), so it always reflects the actual deployment namespace. Frontend consumers can call this endpoint to discover the BFF's namespace at runtime instead of baking it in at build time.
 
 ### Endpoint: `GET /api/namespace-summary`
 

@@ -182,8 +182,8 @@ make chart-push
 
 ```bash
 helm install hello-world oci://quay.io/rh-ai-community-plugins/hello-world-chart \
-  --version 0.4.1 \
-  --namespace hello-world \
+  --version 0.4.2 \
+  --namespace cp-hello-world \
   --create-namespace
 ```
 

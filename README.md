@@ -30,8 +30,8 @@ Install directly from the OCI registry — no need to clone this repo:
 
 ```bash
 helm install hello-world oci://quay.io/rh-ai-community-plugins/hello-world-chart \
-  --version 0.4.1 \
-  --namespace hello-world \
+  --version 0.4.2 \
+  --namespace cp-hello-world \
   --create-namespace
 ```
 
@@ -39,7 +39,7 @@ Or, if you have a local checkout of the repository:
 
 ```bash
 helm install hello-world chart/ \
-  --namespace hello-world \
+  --namespace cp-hello-world \
   --create-namespace
 ```
 
@@ -64,7 +64,7 @@ config.append({
     'tls': False,
     'service': {
       'name': 'hello-world',
-      'namespace': 'hello-world',
+      'namespace': 'cp-hello-world',
       'port': 8080
     }
   },
@@ -75,7 +75,7 @@ config.append({
     'tls': False,
     'service': {
       'name': 'hello-world-bff',
-      'namespace': 'hello-world',
+      'namespace': 'cp-hello-world',
       'port': 3000
     }
   }]

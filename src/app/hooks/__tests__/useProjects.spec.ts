@@ -43,6 +43,41 @@ describe('useProjects', () => {
     expect(result.current.error).toBe('Failed to fetch projects: 500');
   });
 
+  it('should optimistically add a project', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ items: mockProjects }),
+    });
+
+    const { result } = renderHook(() => useProjects());
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => {
+      result.current.addProject({ metadata: { name: 'new-project', uid: '' } });
+    });
+
+    expect(result.current.projects).toHaveLength(3);
+    expect(result.current.projects[2].metadata.name).toBe('new-project');
+  });
+
+  it('should not duplicate when adding an existing project', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ items: mockProjects }),
+    });
+
+    const { result } = renderHook(() => useProjects());
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => {
+      result.current.addProject({ metadata: { name: 'project-a', uid: 'uid-a' } });
+    });
+
+    expect(result.current.projects).toHaveLength(2);
+  });
+
   it('should support refresh', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,

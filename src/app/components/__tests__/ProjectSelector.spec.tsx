@@ -1,9 +1,18 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useProjects } from '~/app/hooks/useProjects';
 import { ProjectSelector } from '../ProjectSelector';
 
 jest.mock('~/app/hooks/useProjects');
+jest.mock('../CreateProjectModal', () => ({
+  CreateProjectModal: ({ isOpen, onClose, onCreated }: { isOpen: boolean; onClose: () => void; onCreated: (name: string) => void }) =>
+    isOpen ? (
+      <div data-testid="create-project-modal">
+        <button onClick={onClose}>Cancel</button>
+        <button onClick={() => onCreated('new-project')}>Create</button>
+      </div>
+    ) : null,
+}));
 
 const userProjects = [
   { metadata: { name: 'my-app', uid: 'uid-1' } },
@@ -19,8 +28,10 @@ const systemProjects = [
 
 const allProjects = [...userProjects, ...systemProjects];
 
+const mockAddProject = jest.fn();
+
 function mockProjects(projects = allProjects, loading = false, error: string | null = null) {
-  (useProjects as jest.Mock).mockReturnValue({ projects, loading, error, refresh: jest.fn() });
+  (useProjects as jest.Mock).mockReturnValue({ projects, loading, error, refresh: jest.fn(), addProject: mockAddProject });
 }
 
 const STORAGE_KEY = 'rhoai.project-favorites';
@@ -149,6 +160,23 @@ describe('ProjectSelector', () => {
     });
   });
 
+  it('closes dropdown on window blur', async () => {
+    const user = userEvent.setup();
+    mockProjects();
+    render(<ProjectSelector selectedProject={null} onSelect={onSelect} />);
+
+    await user.click(screen.getByLabelText('Select a project'));
+    expect(screen.getByText('Projects')).toBeInTheDocument();
+
+    act(() => {
+      window.dispatchEvent(new Event('blur'));
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText('Projects')).not.toBeInTheDocument();
+    });
+  });
+
   it('calls onSelect when a project is clicked', async () => {
     const user = userEvent.setup();
     mockProjects();
@@ -221,5 +249,39 @@ describe('ProjectSelector', () => {
       expect(screen.queryByText('Favorites')).not.toBeInTheDocument();
       expect(screen.getByText('Projects')).toBeInTheDocument();
     });
+  });
+
+  it('shows Create project button in dropdown footer', async () => {
+    const user = userEvent.setup();
+    mockProjects();
+    render(<ProjectSelector selectedProject={null} onSelect={onSelect} />);
+
+    await user.click(screen.getByLabelText('Select a project'));
+
+    expect(screen.getByText('Create project')).toBeInTheDocument();
+  });
+
+  it('opens CreateProjectModal when Create project is clicked', async () => {
+    const user = userEvent.setup();
+    mockProjects();
+    render(<ProjectSelector selectedProject={null} onSelect={onSelect} />);
+
+    await user.click(screen.getByLabelText('Select a project'));
+    await user.click(screen.getByText('Create project'));
+
+    expect(screen.getByTestId('create-project-modal')).toBeInTheDocument();
+  });
+
+  it('auto-selects project after creation and adds it optimistically', async () => {
+    const user = userEvent.setup();
+    mockProjects();
+    render(<ProjectSelector selectedProject={null} onSelect={onSelect} />);
+
+    await user.click(screen.getByLabelText('Select a project'));
+    await user.click(screen.getByText('Create project'));
+    await user.click(screen.getByRole('button', { name: 'Create' }));
+
+    expect(mockAddProject).toHaveBeenCalledWith({ metadata: { name: 'new-project', uid: '' } });
+    expect(onSelect).toHaveBeenCalledWith('new-project');
   });
 });

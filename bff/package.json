@@ -1,6 +1,6 @@
 {
   "name": "hello-world-bff",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "BFF service for the Hello World RHOAI dashboard plugin",
   "main": "dist/server.js",
   "scripts": {
